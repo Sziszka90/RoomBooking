@@ -7,32 +7,81 @@ namespace RoomBooking.Data.Repositories;
 public class RoomsRepository : IRoomsRepository
 {
     private readonly ApplicationDbContext _db;
+    private readonly ILogger<RoomsRepository> _logger;
 
-    public RoomsRepository(ApplicationDbContext db) => _db = db;
-
-    public async Task<List<Room>> GetAllAsync() => await _db.Rooms.ToListAsync();
-
-    public async Task<Room?> GetByIdAsync(int id) => await _db.Rooms.FindAsync(id);
-
-    public async Task<Room> AddAsync(Room room)
+    public RoomsRepository(ApplicationDbContext db, ILogger<RoomsRepository> logger)
     {
-        _db.Rooms.Add(room);
-        await _db.SaveChangesAsync();
+        _db = db;
+        _logger = logger;
+    }
+
+    public async Task<List<Room>> GetAllAsync()
+    {
+        _logger.LogInformation("Retrieving all rooms");
+        var rooms = await _db.Rooms.ToListAsync();
+        _logger.LogInformation("Retrieved {RoomCount} rooms", rooms.Count);
+        return rooms;
+    }
+
+    public async Task<Room?> GetByIdAsync(int id)
+    {
+        _logger.LogInformation("Retrieving room with ID {RoomId}", id);
+        var room = await _db.Rooms.FindAsync(id);
+
+        if (room == null)
+        {
+            _logger.LogWarning("Room with ID {RoomId} not found", id);
+        }
+        else
+        {
+            _logger.LogInformation("Successfully retrieved room {RoomId}: {RoomName}", room.Id, room.Name);
+        }
+
         return room;
     }
 
-    public async Task<bool> ExistsAsync(int id) => await _db.Rooms.AnyAsync(r => r.Id == id);
+    public async Task<Room> AddAsync(Room room)
+    {
+        _logger.LogInformation("Creating new room: {RoomName} with capacity {Capacity}", room.Name, room.Capacity);
+        _db.Rooms.Add(room);
+        await _db.SaveChangesAsync();
+        _logger.LogInformation("Successfully created room with ID {RoomId}: {RoomName}", room.Id, room.Name);
+        return room;
+    }
+
+    public async Task<bool> ExistsAsync(int id)
+    {
+        _logger.LogInformation("Checking if room {RoomId} exists", id);
+        var exists = await _db.Rooms.AnyAsync(r => r.Id == id);
+        _logger.LogInformation("Room {RoomId} exists: {Exists}", id, exists);
+        return exists;
+    }
 
     public async Task<List<Room>> GetAvailableRoomsAsync(DateTimeOffset start, DateTimeOffset end)
     {
+        _logger.LogInformation("Finding available rooms between {Start} and {End}", start, end);
+
         var roomsWithBookings = await _db.Rooms
             .Include(r => r.Bookings)
             .ToListAsync();
+
+        _logger.LogInformation("Loaded {TotalRooms} rooms with their bookings", roomsWithBookings.Count);
 
         var availableRooms = roomsWithBookings
             .Where(r => !r.Bookings.Any(b => !(b.End <= start || b.Start >= end)))
             .ToList();
 
+        _logger.LogInformation("Found {AvailableRooms} available rooms out of {TotalRooms} total rooms",
+            availableRooms.Count, roomsWithBookings.Count);
+
         return availableRooms;
+    }
+
+    public async Task RemoveAsync(Room room)
+    {
+        _logger.LogInformation("Removing room {RoomId}: {RoomName}", room.Id, room.Name);
+        _db.Rooms.Remove(room);
+        await _db.SaveChangesAsync();
+        _logger.LogInformation("Successfully removed room {RoomId}: {RoomName}", room.Id, room.Name);
     }
 }

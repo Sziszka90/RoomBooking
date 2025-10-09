@@ -9,4 +9,5 @@ public interface IRoomsRepository
     Task<Room> AddAsync(Room room);
     Task<bool> ExistsAsync(int id);
     Task<List<Room>> GetAvailableRoomsAsync(DateTimeOffset start, DateTimeOffset end);
+    Task RemoveAsync(Room room);
 }

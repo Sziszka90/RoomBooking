@@ -9,10 +9,12 @@ namespace RoomBooking.Controllers;
 public class BookingsController : ControllerBase
 {
     private readonly IBookingsService _bookingsService;
+    private readonly ILogger<BookingsController> _logger;
 
-    public BookingsController(IBookingsService bookingsService)
+    public BookingsController(IBookingsService bookingsService, ILogger<BookingsController> logger)
     {
         _bookingsService = bookingsService;
+        _logger = logger;
     }
 
     [HttpPost]

@@ -10,26 +10,46 @@ public class BookingsService : IBookingsService
     private readonly IBookingsRepository _bookingsRepository;
     private readonly IRoomsRepository _roomsRepository;
     private readonly IMapper _mapper;
+    private readonly ILogger<BookingsService> _logger;
 
     public BookingsService(
         IBookingsRepository bookingsRepository,
         IRoomsRepository roomsRepository,
-        IMapper mapper)
+        IMapper mapper,
+        ILogger<BookingsService> logger)
     {
         _bookingsRepository = bookingsRepository;
         _roomsRepository = roomsRepository;
         _mapper = mapper;
+        _logger = logger;
     }
 
     public async Task<BookingDto> CreateAsync(CreateBookingDto createBookingDto)
     {
-        if (createBookingDto.End <= createBookingDto.Start) throw new ArgumentException("End must be after Start");
+        _logger.LogInformation("Creating booking for room {RoomId} from {Start} to {End} by {Booker}",
+            createBookingDto.RoomId, createBookingDto.Start, createBookingDto.End, createBookingDto.Booker);
+
+        if (createBookingDto.End <= createBookingDto.Start)
+        {
+            _logger.LogWarning("Invalid booking time range: End {End} is not after Start {Start}",
+                createBookingDto.End, createBookingDto.Start);
+            throw new ArgumentException("End must be after Start");
+        }
 
         var room = await _roomsRepository.GetByIdAsync(createBookingDto.RoomId);
-        if (room == null) throw new InvalidOperationException("Room does not exist");
+        if (room == null)
+        {
+            _logger.LogWarning("Attempted to book non-existent room {RoomId}", createBookingDto.RoomId);
+            throw new InvalidOperationException("Room does not exist");
+        }
 
         var overlap = await _bookingsRepository.AnyOverlapAsync(createBookingDto.RoomId, createBookingDto.Start, createBookingDto.End);
-        if (overlap) throw new InvalidOperationException("Room is already booked for the requested time range");
+        if (overlap)
+        {
+            _logger.LogWarning("Booking conflict detected for room {RoomId} between {Start} and {End}",
+                createBookingDto.RoomId, createBookingDto.Start, createBookingDto.End);
+            throw new InvalidOperationException("Room is already booked for the requested time range");
+        }
 
         var booking = new Booking
         {
@@ -40,6 +60,7 @@ public class BookingsService : IBookingsService
         };
 
         var result = await _bookingsRepository.AddAsync(booking);
+        _logger.LogInformation("Successfully created booking {BookingId} for room {RoomId}", result.Id, result.RoomId);
 
         return _mapper.Map<BookingDto>(result);
     }
@@ -65,7 +86,6 @@ public class BookingsService : IBookingsService
     public async Task<bool> AnyOverlapAsync(int roomId, DateTimeOffset start, DateTimeOffset end)
     {
         var result = await _bookingsRepository.AnyOverlapAsync(roomId, start, end);
-
         return result;
     }
 }

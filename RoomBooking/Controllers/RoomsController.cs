@@ -9,18 +9,20 @@ namespace RoomBooking.Controllers;
 public class RoomsController : ControllerBase
 {
     private readonly IRoomsService _roomsService;
-    private readonly IBookingsService _bookingsService;
+    private readonly ILogger<RoomsController> _logger;
 
-    public RoomsController(IRoomsService rooms, IBookingsService bookings)
+    public RoomsController(IRoomsService rooms, ILogger<RoomsController> logger)
     {
         _roomsService = rooms;
-        _bookingsService = bookings;
+        _logger = logger;
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
+        _logger.LogInformation("API request: Get all rooms");
         var rooms = await _roomsService.GetAllAsync();
+        _logger.LogInformation("API response: Returning {RoomCount} rooms", rooms.Count);
         return Ok(rooms);
     }
 
@@ -48,5 +50,29 @@ public class RoomsController : ControllerBase
 
         var availableRooms = await _roomsService.GetAvailableRooms(start, end);
         return Ok(availableRooms);
+    }
+
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        _logger.LogInformation("API request: Delete room {RoomId}", id);
+
+        try
+        {
+            var deleted = await _roomsService.DeleteAsync(id);
+            if (!deleted)
+            {
+                _logger.LogWarning("API response: Room {RoomId} not found for deletion", id);
+                return NotFound();
+            }
+
+            _logger.LogInformation("API response: Successfully deleted room {RoomId}", id);
+            return NoContent();
+        }
+        catch (InvalidOperationException ex)
+        {
+            _logger.LogWarning("API response: Cannot delete room {RoomId}: {Error}", id, ex.Message);
+            return BadRequest(ex.Message);
+        }
     }
 }

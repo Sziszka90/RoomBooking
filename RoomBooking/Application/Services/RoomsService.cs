@@ -8,12 +8,16 @@ namespace RoomBooking.Application.Services;
 public class RoomsService : IRoomsService
 {
     private readonly IRoomsRepository _roomsRepository;
+    private readonly IBookingsRepository _bookingsRepository;
     private readonly IMapper _mapper;
+    private readonly ILogger<RoomsService> _logger;
 
-    public RoomsService(IRoomsRepository roomsRepository, IBookingsRepository bookings, IMapper mapper)
+    public RoomsService(IRoomsRepository roomsRepository, IBookingsRepository bookingsRepository, IMapper mapper, ILogger<RoomsService> logger)
     {
         _roomsRepository = roomsRepository;
+        _bookingsRepository = bookingsRepository;
         _mapper = mapper;
+        _logger = logger;
     }
 
     public async Task<List<RoomDto>> GetAllAsync()
@@ -39,5 +43,29 @@ public class RoomsService : IRoomsService
     {
         var result = await _roomsRepository.GetAvailableRoomsAsync(start, end);
         return _mapper.Map<List<RoomDto>>(result);
+    }
+
+    public async Task<bool> DeleteAsync(int id)
+    {
+        _logger.LogInformation("Attempting to delete room {RoomId}", id);
+
+        var room = await _roomsRepository.GetByIdAsync(id);
+        if (room == null)
+        {
+            _logger.LogWarning("Cannot delete room {RoomId}: Room not found", id);
+            return false;
+        }
+
+        var roomBookings = await _bookingsRepository.GetForRoomAsync(id);
+        if (roomBookings.Any())
+        {
+            _logger.LogWarning("Cannot delete room {RoomId}: Room has {BookingCount} existing bookings",
+                id, roomBookings.Count);
+            throw new InvalidOperationException("Cannot delete room with existing bookings");
+        }
+
+        await _roomsRepository.RemoveAsync(room);
+        _logger.LogInformation("Successfully deleted room {RoomId}: {RoomName}", id, room.Name);
+        return true;
     }
 }

@@ -15,7 +15,7 @@ This project follows Clean Architecture principles with clear separation of conc
 
 ### Room Management
 
--   ✅ Create, read, update rooms
+-   ✅ Create, read, delete rooms
 -   ✅ Get all rooms
 -   ✅ Get room by ID
 -   ✅ Check room availability for specific time periods
@@ -90,7 +90,7 @@ RoomBooking/
 1. **Clone the repository**
 
     ```bash
-    git clone <repository-url>
+    git clone https://github.com/Sziszka90/RoomBooking.git
     cd RoomBooking
     ```
 
@@ -139,6 +139,7 @@ The API will be available at:
 | GET    | `/api/rooms`                                   | Get all rooms                       |
 | GET    | `/api/rooms/{id}`                              | Get room by ID                      |
 | POST   | `/api/rooms`                                   | Create a new room                   |
+| DELETE | `/api/rooms/{id}`                              | Delete a room                       |
 | GET    | `/api/rooms/available?start={start}&end={end}` | Get available rooms for time period |
 
 ### Bookings
@@ -241,7 +242,7 @@ The application automatically:
 
 ## 📝 License
 
-This project is part of the ApiTemplate repository and follows the same licensing terms.
+This project is part of the RoomBooking repository and follows the same licensing terms.
 
 ## 🤝 Contributing
 
