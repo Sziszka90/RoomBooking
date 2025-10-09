@@ -1,6 +1,7 @@
 using AutoMapper;
 using RoomBooking.Application.Dtos.BookingDtos;
 using RoomBooking.Data.Repositories.Abstraction;
+using RoomBooking.Domain.Exceptions;
 using RoomBooking.Models;
 
 namespace RoomBooking.Application.Services;
@@ -40,7 +41,7 @@ public class BookingsService : IBookingsService
         if (room == null)
         {
             _logger.LogWarning("Attempted to book non-existent room {RoomId}", createBookingDto.RoomId);
-            throw new InvalidOperationException("Room does not exist");
+            throw new RoomNotFoundException(createBookingDto.RoomId);
         }
 
         var overlap = await _bookingsRepository.AnyOverlapAsync(createBookingDto.RoomId, createBookingDto.Start, createBookingDto.End);
@@ -65,21 +66,24 @@ public class BookingsService : IBookingsService
         return _mapper.Map<BookingDto>(result);
     }
 
-    public async Task<BookingDto?> GetByIdAsync(int id)
+    public async Task<BookingDto> GetByIdAsync(int id)
     {
         var result = await _bookingsRepository.GetByIdAsync(id);
+        if (result == null) throw new BookingNotFoundException(id);
         return _mapper.Map<BookingDto>(result);
     }
 
     public async Task<List<BookingDto>> GetForRoomAsync(int roomId)
     {
         var result = await _bookingsRepository.GetForRoomAsync(roomId);
+        if (result == null) throw new RoomNotFoundException(roomId);
         return _mapper.Map<List<BookingDto>>(result);
     }
 
-    public async Task CancelAsync(BookingDto bookingDto)
+    public async Task CancelAsync(int id)
     {
-        var result = await _bookingsRepository.GetByIdAsync(bookingDto.Id);
+        var result = await _bookingsRepository.GetByIdAsync(id);
+        if (result == null) throw new BookingNotFoundException(id);
         await _bookingsRepository.RemoveAsync(result!);
     }
 

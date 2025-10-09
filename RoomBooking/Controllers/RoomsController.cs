@@ -57,22 +57,8 @@ public class RoomsController : ControllerBase
     {
         _logger.LogInformation("API request: Delete room {RoomId}", id);
 
-        try
-        {
-            var deleted = await _roomsService.DeleteAsync(id);
-            if (!deleted)
-            {
-                _logger.LogWarning("API response: Room {RoomId} not found for deletion", id);
-                return NotFound();
-            }
-
-            _logger.LogInformation("API response: Successfully deleted room {RoomId}", id);
-            return NoContent();
-        }
-        catch (InvalidOperationException ex)
-        {
-            _logger.LogWarning("API response: Cannot delete room {RoomId}: {Error}", id, ex.Message);
-            return BadRequest(ex.Message);
-        }
+        await _roomsService.DeleteAsync(id);
+        _logger.LogInformation("API response: Successfully deleted room {RoomId}", id);
+        return NoContent();
     }
 }

@@ -7,8 +7,8 @@ namespace RoomBooking.Application.Services;
 public interface IBookingsService
 {
     Task<BookingDto> CreateAsync(CreateBookingDto input);
-    Task<BookingDto?> GetByIdAsync(int id);
+    Task<BookingDto> GetByIdAsync(int id);
     Task<List<BookingDto>> GetForRoomAsync(int roomId);
-    Task CancelAsync(BookingDto bookingDto);
+    Task CancelAsync(int id);
     Task<bool> AnyOverlapAsync(int roomId, DateTimeOffset start, DateTimeOffset end);
 }

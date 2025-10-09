@@ -1,6 +1,7 @@
 using AutoMapper;
 using RoomBooking.Application.Dtos.RoomDtos;
 using RoomBooking.Data.Repositories.Abstraction;
+using RoomBooking.Domain.Exceptions;
 using RoomBooking.Models;
 
 namespace RoomBooking.Application.Services;
@@ -26,9 +27,10 @@ public class RoomsService : IRoomsService
         return _mapper.Map<List<RoomDto>>(result);
     }
 
-    public async Task<RoomDto?> GetByIdAsync(int id)
+    public async Task<RoomDto> GetByIdAsync(int id)
     {
         var result = await _roomsRepository.GetByIdAsync(id);
+        if (result == null) throw new RoomNotFoundException(id);
         return _mapper.Map<RoomDto>(result);
     }
 
@@ -45,7 +47,7 @@ public class RoomsService : IRoomsService
         return _mapper.Map<List<RoomDto>>(result);
     }
 
-    public async Task<bool> DeleteAsync(int id)
+    public async Task DeleteAsync(int id)
     {
         _logger.LogInformation("Attempting to delete room {RoomId}", id);
 
@@ -53,7 +55,7 @@ public class RoomsService : IRoomsService
         if (room == null)
         {
             _logger.LogWarning("Cannot delete room {RoomId}: Room not found", id);
-            return false;
+            throw new RoomNotFoundException(id);
         }
 
         var roomBookings = await _bookingsRepository.GetForRoomAsync(id);
@@ -66,6 +68,6 @@ public class RoomsService : IRoomsService
 
         await _roomsRepository.RemoveAsync(room);
         _logger.LogInformation("Successfully deleted room {RoomId}: {RoomName}", id, room.Name);
-        return true;
+        return;
     }
 }

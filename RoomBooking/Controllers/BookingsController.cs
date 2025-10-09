@@ -59,7 +59,7 @@ public class BookingsController : ControllerBase
     {
         var booking = await _bookingsService.GetByIdAsync(id);
         if (booking == null) return NotFound();
-        await _bookingsService.CancelAsync(booking);
+        await _bookingsService.CancelAsync(id);
         return NoContent();
     }
 }
