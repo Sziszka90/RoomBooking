@@ -63,7 +63,7 @@ public class RoomsService : IRoomsService
         {
             _logger.LogWarning("Cannot delete room {RoomId}: Room has {BookingCount} existing bookings",
                 id, roomBookings.Count);
-            throw new InvalidOperationException("Cannot delete room with existing bookings");
+            throw new RoomDeletionException("Cannot delete room with existing bookings");
         }
 
         await _roomsRepository.RemoveAsync(room);

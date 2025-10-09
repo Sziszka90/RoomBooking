@@ -31,6 +31,7 @@ public class GlobalExceptionMiddleware
             RoomNotFoundException => (HttpStatusCode.NotFound, nameof(RoomNotFoundException)),
             BookingNotFoundException => (HttpStatusCode.NotFound, nameof(BookingNotFoundException)),
             BookingConflictException => (HttpStatusCode.Conflict, nameof(BookingConflictException)),
+            RoomDeletionException => (HttpStatusCode.BadRequest, nameof(RoomDeletionException)),
             _ => (HttpStatusCode.InternalServerError, "ServerError")
         };
 

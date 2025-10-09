@@ -19,3 +19,8 @@ public class BookingConflictException : InvalidOperationException
 {
     public BookingConflictException(string message) : base(message) { }
 }
+
+public class RoomDeletionException : InvalidOperationException
+{
+    public RoomDeletionException(string message) : base(message) { }
+}

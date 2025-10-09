@@ -186,7 +186,7 @@ public class RoomsServiceTests
         _mockBookingsRepository.Setup(b => b.GetForRoomAsync(roomId)).ReturnsAsync(bookings);
 
         // Act & Assert
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(
+        var exception = await Assert.ThrowsAsync<RoomDeletionException>(
             () => _roomsService.DeleteAsync(roomId));
 
         Assert.Equal("Cannot delete room with existing bookings", exception.Message);
