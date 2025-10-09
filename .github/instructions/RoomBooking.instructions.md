@@ -5,38 +5,61 @@ This repository is a Room Booking Web API implemented with .NET (net9.0) and EF 
 Summary (what this project is)
 
 -   Project name: RoomBooking (assembly/root namespace: RoomBooking)
--   Web API using ASP.NET Core (net9.0)
--   Persistence: Entity Framework Core with SQLite (local file at `./data/roombooking.db` by default)
--   Key concepts: Room and Booking domain entities, repository + service layers, DTOs, AutoMapper mappings, and a GlobalExceptionMiddleware producing ProblemDetails responses.
+-   Web API using ASP.NET Core (net9.0) with Swagger/OpenAPI documentation
+-   Persistence: Entity Framework Core 8.0.11 with SQLite (local file at `./data/roombooking.db` by default)
+-   Testing: Comprehensive unit test suite with Moq for mocking repositories
+-   Key concepts: Room and Booking domain entities, repository + service layers, DTOs, AutoMapper mappings, comprehensive logging, and a GlobalExceptionMiddleware producing ProblemDetails responses.
 
 Repository layout and important folders
 
--   Controllers/ — API controllers (RoomsController, BookingsController)
--   Domain/ — domain-specific types and domain exceptions
--   Models/ — EF entities (Room, Booking)
+-   Controllers/ — API controllers (RoomsController, BookingsController) with comprehensive logging
+-   Domain/ — domain-specific types and domain exceptions (RoomNotFoundException, BookingNotFoundException, RoomDeletionException, etc.)
+-   Models/ — EF entities (Room, Booking) - note: keep domain entities under Domain/ folder
 -   Application/
     -   Dtos/ — request/response DTOs (RoomDtos, BookingDtos)
-    -   Services/ — application services and their interfaces
+    -   Services/ — application services and their interfaces with logging and business logic
     -   Mapping/ — AutoMapper profiles
 -   Data/
     -   ApplicationDbContext.cs — EF Core DbContext
-    -   Repositories/ — repository interfaces and EF implementations
--   Middlewares/ — GlobalExceptionMiddleware
--   Program.cs — composition root (DI, EF registration, middleware, startup migration handling)
+    -   Migrations/ — EF Core migrations (stored in Data folder)
+    -   Repositories/ — repository interfaces and EF implementations with logging
+-   Middlewares/ — GlobalExceptionMiddleware with ProblemDetails support
+-   RoomBooking.Testing/ — Unit test project with Moq for repository mocking
+-   .vscode/ — VS Code configuration for debugging and tasks
+-   Program.cs — composition root (DI, EF registration, middleware, startup migration handling, Swagger configuration)
 -   appsettings.json — default connection string: Data Source=./data/roombooking.db
 
 Domain model (high-level)
 
--   Room: Id, Name, Capacity, navigation to Bookings
--   Booking: Id, RoomId, Start, End, Booker, navigation to Room
+-   Room: Id, Name (max 100 chars), Capacity, navigation to Bookings
+-   Booking: Id, RoomId, Start (DateTimeOffset), End (DateTimeOffset), Booker (max 200 chars), navigation to Room
+
+API endpoints
+
+-   GET /api/rooms — Get all rooms
+-   GET /api/rooms/{id} — Get room by ID (throws RoomNotFoundException if not found)
+-   POST /api/rooms — Create a new room
+-   DELETE /api/rooms/{id} — Delete room (throws RoomDeletionException if room has bookings)
+-   GET /api/rooms/available?start={start}&end={end} — Get available rooms for time period
+-   GET /api/bookings/{id} — Get booking by ID (throws BookingNotFoundException if not found)
+-   POST /api/bookings — Create a new booking with overlap validation
+-   GET /api/bookings/room/{roomId} — Get all bookings for a room
+-   DELETE /api/bookings/{id} — Cancel a booking
 
 Coding & architecture conventions for contributors
 
--   Keep domain entities (persistent models) under `Models/` and place DTOs under `Application/Dtos/`.
--   Services accept DTOs (Create/Update DTOs) and return DTOs; service implementations construct domain entities and call repositories.
--   Repositories expose simple CRUD/query methods and are implemented with EF Core in `Data/Repositories`.
--   Use AutoMapper for mapping entities <-> DTOs. Mapping profiles live in `Application/Mapping` (or `Mapping/`). Register AutoMapper in Program.cs.
--   Business validation (time range ordering, overlap checks) belongs in services; throw domain exceptions (e.g., InvalidBookingException, BookingConflictException) — middleware will translate them to proper HTTP codes.
+-   Keep domain entities under `Domain/` (Room.cs, Booking.cs) and place DTOs under `Application/Dtos/`.
+-   Services accept DTOs (Create/Update DTOs) and return non-nullable DTOs; throw specific domain exceptions instead of returning null.
+-   Service methods should have comprehensive logging using ILogger<T> for operations, warnings, and errors.
+-   Repositories expose CRUD/query methods implemented with EF Core in `Data/Repositories` with logging.
+-   Use `Include()` for eager loading to minimize database queries and handle SQLite DateTimeOffset limitations with client-side evaluation.
+-   Use AutoMapper for mapping entities <-> DTOs. Mapping profiles live in `Application/Mapping`. Register AutoMapper in Program.cs.
+-   Business validation (time range ordering, overlap checks) belongs in services; throw specific domain exceptions:
+    -   RoomNotFoundException, BookingNotFoundException for missing entities
+    -   RoomDeletionException for business rule violations
+    -   ArgumentException for invalid input data
+-   GlobalExceptionMiddleware translates domain exceptions to appropriate HTTP status codes with ProblemDetails responses.
+-   Write comprehensive unit tests in RoomBooking.Testing project using Moq to mock repositories.
 
 Database and migrations (developer workflow)
 
@@ -55,8 +78,8 @@ dotnet tool update --global dotnet-ef --version 8.0.11
 3. Create an initial migration (from the project root where the .csproj lives)
 
 ```bash
-cd ApiTemplate/ApiTemplate
-dotnet ef migrations add InitialCreate
+cd RoomBooking/RoomBooking
+dotnet ef migrations add InitialCreate --output-dir Data/Migrations
 ```
 
 4. Apply the migration to the local SQLite DB
@@ -73,21 +96,46 @@ Notes about startup migrations
 How to run locally
 
 ```bash
-cd ApiTemplate/ApiTemplate
+cd RoomBooking/RoomBooking
 dotnet run
-# then open https://localhost:5001/swagger/index.html (or the port printed by the run output)
+# then open https://localhost:7068/swagger (HTTPS) or http://localhost:5133/swagger (HTTP)
 ```
+
+Debugging in VS Code
+
+-   Use F5 to start debugging with the configured launch profiles
+-   Available debug configurations: HTTP, HTTPS, and Launch Browser (auto-opens Swagger)
+-   Build tasks are configured for dotnet build, watch, clean, and restore
 
 Testing and validation
 
--   Controllers use model binding and data annotations for basic validation. Services enforce business rules and throw domain exceptions; the GlobalExceptionMiddleware converts these to ProblemDetails responses.
+-   Controllers use model binding and data annotations for basic validation
+-   Services enforce business rules and throw domain exceptions; GlobalExceptionMiddleware converts these to ProblemDetails responses
+-   Comprehensive unit test suite in RoomBooking.Testing project:
+    -   Service layer tests with mocked repositories using Moq
+    -   Integration tests for complex scenarios
+    -   Test helper classes for common test data setup
+    -   Run tests with: `dotnet test RoomBooking.Testing/RoomBooking.Testing.csproj`
 
 Developer tips
 
--   Keep DTO namespaces under `RoomBooking.Application.Dtos` and service interfaces under `RoomBooking.Application.Services` so DI registrations in Program.cs are consistent.
--   Commit the generated `Migrations/` folder to source control so team members and CI can apply the same schema.
--   If dotnet-ef cannot find the DbContext at design time, add a design-time factory by implementing `IDesignTimeDbContextFactory<ApplicationDbContext>` to provide a connection string for migrations.
--   Avoid calling `EnsureCreated()` in production; use explicit migrations and a deployment-time migration strategy there.
+-   Keep DTO namespaces under `RoomBooking.Application.Dtos` and service interfaces under `RoomBooking.Application.Services` so DI registrations in Program.cs are consistent
+-   All services, repositories, and controllers should inject ILogger<T> for comprehensive logging
+-   Commit the generated `Data/Migrations/` folder to source control so team members and CI can apply the same schema
+-   SQLite DateTimeOffset limitations: Use client-side evaluation (ToListAsync() then LINQ) for DateTimeOffset comparisons
+-   Create specific domain exceptions instead of using generic exceptions for better error handling
+-   Use `Include()` for loading related data to minimize database round trips
+-   Write unit tests for all service methods, mocking repository dependencies
+-   If dotnet-ef cannot find the DbContext at design time, add a design-time factory by implementing `IDesignTimeDbContextFactory<ApplicationDbContext>`
+-   Avoid calling `EnsureCreated()` in production; use explicit migrations and a deployment-time migration strategy there
+
+Package versions and dependencies
+
+-   .NET 9.0 (net9.0)
+-   Entity Framework Core 8.0.11
+-   AutoMapper 12.0.1
+-   Swashbuckle.AspNetCore 7.0.0 for Swagger
+-   xUnit, Moq, AutoFixture for testing
 
 This document should be updated if project layout, DbContext name, or the persistence strategy changes.
 
