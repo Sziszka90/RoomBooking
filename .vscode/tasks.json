@@ -1,0 +1,55 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "build",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"build",
+				"${workspaceFolder}/RoomBooking/RoomBooking.csproj",
+				"/property:GenerateFullPaths=true",
+				"/consoleloggerparameters:NoSummary"
+			],
+			"problemMatcher": "$msCompile",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		},
+		{
+			"type": "msbuild",
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build",
+			"label": "Build: RoomBooking.csproj",
+			"detail": "Build the RoomBooking.csproj project using dotnet build"
+		},
+		{
+			"label": "watch",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"watch",
+				"run",
+				"--project",
+				"${workspaceFolder}/RoomBooking/RoomBooking.csproj"
+			],
+			"problemMatcher": "$msCompile",
+			"isBackground": true
+		},
+		{
+			"label": "clean",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"clean",
+				"${workspaceFolder}/RoomBooking/RoomBooking.csproj",
+				"/property:GenerateFullPaths=true",
+				"/consoleloggerparameters:NoSummary"
+			],
+			"problemMatcher": "$msCompile"
+		}
+	]
+}

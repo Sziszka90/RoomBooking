@@ -1,0 +1,4 @@
+{
+    "dotnet.server.useOmnisharp": true,
+    "github.copilot.chat.notebook.enhancedNextEditSuggestions.enabled": true
+}

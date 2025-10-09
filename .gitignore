@@ -1,0 +1,15 @@
+bin/
+obj/
+
+.idea/
+*.iml
+
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+*.db
+
+*.log
