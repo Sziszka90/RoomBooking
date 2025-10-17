@@ -15,16 +15,15 @@ public class BookingsRepository : IBookingsRepository
         _logger = logger;
     }
 
-    public async Task<Booking> AddAsync(Booking booking)
+    public Task<Booking> AddAsync(Booking booking)
     {
         _logger.LogInformation("Creating new booking for room {RoomId} from {Start} to {End} by {Booker}",
             booking.RoomId, booking.Start, booking.End, booking.Booker);
 
         _db.Bookings.Add(booking);
-        await _db.SaveChangesAsync();
 
-        _logger.LogInformation("Successfully created booking with ID {BookingId}", booking.Id);
-        return booking;
+        _logger.LogInformation("Booking added to context for room {RoomId}", booking.RoomId);
+        return Task.FromResult(booking);
     }
 
     public async Task<Booking?> GetByIdAsync(int id)
@@ -45,7 +44,7 @@ public class BookingsRepository : IBookingsRepository
         return booking;
     }
 
-    public async Task<List<Booking>> GetForRoomAsync(int roomId)
+    public async Task<List<Booking>> GetBookingForRoomAsync(int roomId)
     {
         _logger.LogInformation("Retrieving all bookings for room {RoomId}", roomId);
         var bookings = await _db.Bookings.Include(b => b.Room).Where(b => b.RoomId == roomId).ToListAsync();
@@ -53,6 +52,49 @@ public class BookingsRepository : IBookingsRepository
 
         _logger.LogInformation("Found {BookingCount} bookings for room {RoomId}", sortedBookings.Count, roomId);
         return sortedBookings;
+    }
+
+    public async Task<List<Booking>> GetUserHistoryAsync(
+        string booker,
+        DateTimeOffset? fromDate = null,
+        DateTimeOffset? toDate = null,
+        decimal? minPrice = null,
+        decimal? maxPrice = null)
+    {
+        _logger.LogInformation("Retrieving booking history for user {Booker} with filters: FromDate={FromDate}, ToDate={ToDate}, MinPrice={MinPrice}, MaxPrice={MaxPrice}",
+            booker, fromDate, toDate, minPrice, maxPrice);
+
+        var query = _db.Bookings
+            .Include(b => b.Room)
+            .Where(b => b.Booker == booker);
+
+        if (fromDate.HasValue)
+        {
+            query = query.Where(b => b.Start >= fromDate.Value);
+        }
+
+        if (toDate.HasValue)
+        {
+            query = query.Where(b => b.Start <= toDate.Value);
+        }
+
+        if (minPrice.HasValue)
+        {
+            query = query.Where(b => b.TotalPrice >= minPrice.Value);
+        }
+
+        if (maxPrice.HasValue)
+        {
+            query = query.Where(b => b.TotalPrice <= maxPrice.Value);
+        }
+
+        var bookings = await query
+            .OrderByDescending(b => b.BookingDate)
+            .ThenByDescending(b => b.Start)
+            .ToListAsync();
+
+        _logger.LogInformation("Found {BookingCount} bookings in history for user {Booker}", bookings.Count, booker);
+        return bookings;
     }
 
     public async Task<bool> AnyOverlapAsync(int roomId, DateTimeOffset start, DateTimeOffset end)
@@ -69,11 +111,28 @@ public class BookingsRepository : IBookingsRepository
         return hasOverlap;
     }
 
-    public async Task RemoveAsync(Booking booking)
+    public Task RemoveAsync(Booking booking)
     {
         _logger.LogInformation("Removing booking {BookingId} for room {RoomId}", booking.Id, booking.RoomId);
         _db.Bookings.Remove(booking);
-        await _db.SaveChangesAsync();
-        _logger.LogInformation("Successfully removed booking {BookingId}", booking.Id);
+        _logger.LogInformation("Booking {BookingId} marked for removal", booking.Id);
+        return Task.CompletedTask;
+    }
+
+    public Task<Booking> UpdateAsync(Booking booking)
+    {
+        _logger.LogInformation("Updating booking {BookingId} for room {RoomId}", booking.Id, booking.RoomId);
+        _db.Bookings.Update(booking);
+        _logger.LogInformation("Booking {BookingId} marked for update", booking.Id);
+        return Task.FromResult(booking);
+    }
+
+    public Task CancelAsync(Booking booking)
+    {
+        _logger.LogInformation("Cancelling booking {BookingId} for room {RoomId}", booking.Id, booking.RoomId);
+        booking.IsCancelled = true;
+        _db.Bookings.Update(booking);
+        _logger.LogInformation("Booking {BookingId} marked as cancelled", booking.Id);
+        return Task.CompletedTask;
     }
 }

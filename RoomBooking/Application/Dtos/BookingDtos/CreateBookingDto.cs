@@ -16,4 +16,9 @@ public class CreateBookingDto
     [Required]
     [MaxLength(200)]
     public string Booker { get; set; } = string.Empty;
+
+    [Required]
+    [Range(0.01, double.MaxValue, ErrorMessage = "Total price must be greater than 0")]
+    public decimal TotalPrice { get; set; }
 }
+

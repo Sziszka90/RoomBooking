@@ -44,11 +44,16 @@ public class RoomsController : ControllerBase
     }
 
     [HttpGet("available")]
-    public async Task<IActionResult> GetAvailable([FromQuery] DateTimeOffset start, [FromQuery] DateTimeOffset end)
+    public async Task<IActionResult> GetAvailable(
+        [FromQuery] DateTimeOffset start,
+        [FromQuery] DateTimeOffset end,
+        [FromQuery] decimal? minPrice,
+        [FromQuery] decimal? maxPrice
+    )
     {
         if (end <= start) return BadRequest("End must be after start");
 
-        var availableRooms = await _roomsService.GetAvailableRooms(start, end);
+        var availableRooms = await _roomsService.GetAvailableRooms(start, end, minPrice, maxPrice);
         return Ok(availableRooms);
     }
 

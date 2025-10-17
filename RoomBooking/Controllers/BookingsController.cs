@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using RoomBooking.Application.Dtos.BookingDtos;
 using RoomBooking.Application.Services;
+using RoomBooking.Domain.Exceptions;
 
 namespace RoomBooking.Controllers;
 
@@ -9,12 +10,9 @@ namespace RoomBooking.Controllers;
 public class BookingsController : ControllerBase
 {
     private readonly IBookingsService _bookingsService;
-    private readonly ILogger<BookingsController> _logger;
-
-    public BookingsController(IBookingsService bookingsService, ILogger<BookingsController> logger)
+    public BookingsController(IBookingsService bookingsService)
     {
         _bookingsService = bookingsService;
-        _logger = logger;
     }
 
     [HttpPost]
@@ -22,21 +20,8 @@ public class BookingsController : ControllerBase
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        if (createBookingDto.End <= createBookingDto.Start) return BadRequest("End must be after Start");
-
-        try
-        {
-            var created = await _bookingsService.CreateAsync(createBookingDto);
-            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return Conflict(ex.Message);
-        }
+        var created = await _bookingsService.CreateAsync(createBookingDto);
+        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
     }
 
     [HttpGet("{id:int}")]
@@ -50,16 +35,27 @@ public class BookingsController : ControllerBase
     [HttpGet("for-room/{roomId:int}")]
     public async Task<IActionResult> ForRoom(int roomId)
     {
-        var bookings = await _bookingsService.GetForRoomAsync(roomId);
+        var bookings = await _bookingsService.GetBookingForRoomAsync(roomId);
         return Ok(bookings);
     }
 
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Cancel(int id)
     {
-        var booking = await _bookingsService.GetByIdAsync(id);
-        if (booking == null) return NotFound();
         await _bookingsService.CancelAsync(id);
         return NoContent();
+    }
+
+    [HttpPost("swap")]
+    public async Task<IActionResult> Swap([FromBody] SwapBookingDto swapBookingDto)
+    {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+
+        var newBooking = await _bookingsService.SwapAsync(swapBookingDto);
+        return Ok(new
+        {
+            NewBooking = newBooking,
+            Message = "Booking swapped to new room successfully"
+        });
     }
 }

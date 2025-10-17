@@ -15,6 +15,16 @@ public class Room
     [Range(1, int.MaxValue)]
     public int Capacity { get; set; }
 
-    [JsonIgnore]
+    [Required]
+    [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than 0")]
+    public decimal PricePerDay { get; set; }
+
+    [MaxLength(500)]
+    public string Description { get; set; } = string.Empty;
+
+    [Required]
+    [MaxLength(100)]
+    public string Address { get; set; } = "Budapest";
+
     public List<Booking> Bookings { get; set; } = new();
 }

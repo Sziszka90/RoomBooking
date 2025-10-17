@@ -8,6 +8,10 @@ public interface IRoomsService
     Task<List<RoomDto>> GetAllAsync();
     Task<RoomDto> GetByIdAsync(int id);
     Task<RoomDto> CreateAsync(CreateRoomDto createRoomDto);
-    Task<List<RoomDto>> GetAvailableRooms(DateTimeOffset start, DateTimeOffset end);
+    Task<List<RoomDto>> GetAvailableRooms(
+        DateTimeOffset start,
+        DateTimeOffset end,
+        decimal? minPrice,
+        decimal? maxPrice);
     Task DeleteAsync(int id);
 }

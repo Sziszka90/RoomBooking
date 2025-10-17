@@ -8,6 +8,10 @@ public interface IRoomsRepository
     Task<Room?> GetByIdAsync(int id);
     Task<Room> AddAsync(Room room);
     Task<bool> ExistsAsync(int id);
-    Task<List<Room>> GetAvailableRoomsAsync(DateTimeOffset start, DateTimeOffset end);
+    Task<List<Room>> GetAvailableRoomsAsync(
+        DateTimeOffset start,
+        DateTimeOffset end,
+        decimal? minPrice = null,
+        decimal? maxPrice = null);
     Task RemoveAsync(Room room);
 }

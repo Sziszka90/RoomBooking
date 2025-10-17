@@ -15,5 +15,13 @@ public class BookingDto
 
     public string Booker { get; set; } = string.Empty;
 
+    public decimal TotalPrice { get; set; }
+
+    public DateTimeOffset BookingDate { get; set; }
+
+    public int NumberOfDays { get; set; }
+
     public RoomDto? Room { get; set; }
+
+    public bool IsCancelled { get; set; }
 }

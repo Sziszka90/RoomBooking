@@ -44,7 +44,6 @@ public class RoomsRepository : IRoomsRepository
     {
         _logger.LogInformation("Creating new room: {RoomName} with capacity {Capacity}", room.Name, room.Capacity);
         _db.Rooms.Add(room);
-        await _db.SaveChangesAsync();
         _logger.LogInformation("Successfully created room with ID {RoomId}: {RoomName}", room.Id, room.Name);
         return room;
     }
@@ -57,11 +56,26 @@ public class RoomsRepository : IRoomsRepository
         return exists;
     }
 
-    public async Task<List<Room>> GetAvailableRoomsAsync(DateTimeOffset start, DateTimeOffset end)
+    public async Task<List<Room>> GetAvailableRoomsAsync(
+        DateTimeOffset start,
+        DateTimeOffset end,
+        decimal? minPrice = null,
+        decimal? maxPrice = null)
     {
         _logger.LogInformation("Finding available rooms between {Start} and {End}", start, end);
 
-        var roomsWithBookings = await _db.Rooms
+        var query = _db.Rooms.AsQueryable();
+
+        if (minPrice != null)
+        {
+            query = query.Where(r => r.PricePerDay >= minPrice);
+        }
+        if (maxPrice != null)
+        {
+            query = query.Where(r => r.PricePerDay <= maxPrice);
+        }
+
+        var roomsWithBookings = await query
             .Include(r => r.Bookings)
             .ToListAsync();
 
@@ -81,7 +95,6 @@ public class RoomsRepository : IRoomsRepository
     {
         _logger.LogInformation("Removing room {RoomId}: {RoomName}", room.Id, room.Name);
         _db.Rooms.Remove(room);
-        await _db.SaveChangesAsync();
         _logger.LogInformation("Successfully removed room {RoomId}: {RoomName}", room.Id, room.Name);
     }
 }
