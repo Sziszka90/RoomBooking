@@ -14,7 +14,5 @@ public interface IBookingsRepository
         decimal? minPrice = null,
         decimal? maxPrice = null);
     Task<bool> AnyOverlapAsync(int roomId, DateTimeOffset start, DateTimeOffset end);
-    Task RemoveAsync(Booking booking);
     Task<Booking> UpdateAsync(Booking booking);
-    Task CancelAsync(Booking booking);
 }

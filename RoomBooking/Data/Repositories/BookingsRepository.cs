@@ -47,7 +47,7 @@ public class BookingsRepository : IBookingsRepository
     public async Task<List<Booking>> GetBookingForRoomAsync(int roomId)
     {
         _logger.LogInformation("Retrieving all bookings for room {RoomId}", roomId);
-        var bookings = await _db.Bookings.Include(b => b.Room).Where(b => b.RoomId == roomId).ToListAsync();
+        var bookings = await _db.Bookings.Include(b => b.Room).Where(b => b.RoomId == roomId && !b.IsCancelled).ToListAsync();
         var sortedBookings = bookings.OrderByDescending(b => b.Start).ToList();
 
         _logger.LogInformation("Found {BookingCount} bookings for room {RoomId}", sortedBookings.Count, roomId);
@@ -102,7 +102,7 @@ public class BookingsRepository : IBookingsRepository
         _logger.LogInformation("Checking for booking overlaps in room {RoomId} between {Start} and {End}",
             roomId, start, end);
 
-        var roomBookings = await _db.Bookings.Where(b => b.RoomId == roomId).ToListAsync();
+        var roomBookings = await _db.Bookings.Where(b => b.RoomId == roomId && !b.IsCancelled).ToListAsync();
         var hasOverlap = roomBookings.Any(b => !(b.End <= start || b.Start >= end));
 
         _logger.LogInformation("Overlap check for room {RoomId}: {HasOverlap} (checked {BookingCount} bookings)",
@@ -111,28 +111,11 @@ public class BookingsRepository : IBookingsRepository
         return hasOverlap;
     }
 
-    public Task RemoveAsync(Booking booking)
-    {
-        _logger.LogInformation("Removing booking {BookingId} for room {RoomId}", booking.Id, booking.RoomId);
-        _db.Bookings.Remove(booking);
-        _logger.LogInformation("Booking {BookingId} marked for removal", booking.Id);
-        return Task.CompletedTask;
-    }
-
     public Task<Booking> UpdateAsync(Booking booking)
     {
         _logger.LogInformation("Updating booking {BookingId} for room {RoomId}", booking.Id, booking.RoomId);
         _db.Bookings.Update(booking);
         _logger.LogInformation("Booking {BookingId} marked for update", booking.Id);
         return Task.FromResult(booking);
-    }
-
-    public Task CancelAsync(Booking booking)
-    {
-        _logger.LogInformation("Cancelling booking {BookingId} for room {RoomId}", booking.Id, booking.RoomId);
-        booking.IsCancelled = true;
-        _db.Bookings.Update(booking);
-        _logger.LogInformation("Booking {BookingId} marked as cancelled", booking.Id);
-        return Task.CompletedTask;
     }
 }

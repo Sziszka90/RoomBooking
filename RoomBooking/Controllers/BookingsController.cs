@@ -39,11 +39,11 @@ public class BookingsController : ControllerBase
         return Ok(bookings);
     }
 
-    [HttpDelete("{id:int}")]
+    [HttpPut("cancel/{id:int}")]
     public async Task<IActionResult> Cancel(int id)
     {
         await _bookingsService.CancelAsync(id);
-        return NoContent();
+        return Ok();
     }
 
     [HttpPost("swap")]

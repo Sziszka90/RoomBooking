@@ -2,20 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RoomBooking.Data;
 
 #nullable disable
 
-namespace RoomBooking.Data.Migrations
+namespace RoomBooking.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251009181258_InitialCreate")]
-    partial class InitialCreate
+    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.11");
@@ -31,13 +28,22 @@ namespace RoomBooking.Data.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTimeOffset>("BookingDate")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTimeOffset>("End")
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsCancelled")
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("RoomId")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTimeOffset>("Start")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("TotalPrice")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -53,12 +59,25 @@ namespace RoomBooking.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("Capacity")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("PricePerDay")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

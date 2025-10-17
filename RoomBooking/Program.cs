@@ -53,6 +53,17 @@ using (var scope = app.Services.CreateScope())
             db.Database.Migrate();
             logger.LogInformation("Database migrations applied successfully.");
         }
+
+        // Configure SQLite to use DELETE journal mode (no WAL files)
+        try
+        {
+            db.Database.ExecuteSqlRaw("PRAGMA journal_mode=DELETE;");
+            logger.LogInformation("SQLite journal mode set to DELETE (no WAL files will be created).");
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Failed to set SQLite journal mode to DELETE.");
+        }
     }
     catch (Exception ex)
     {

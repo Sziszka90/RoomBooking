@@ -27,11 +27,14 @@ public class GlobalExceptionMiddleware
     {
         var (status, title) = ex switch
         {
+            ValidationException => (HttpStatusCode.BadRequest, nameof(ValidationException)),
+            OverlapException => (HttpStatusCode.Conflict, nameof(OverlapException)),
             InvalidBookingException => (HttpStatusCode.BadRequest, nameof(InvalidBookingException)),
             RoomNotFoundException => (HttpStatusCode.NotFound, nameof(RoomNotFoundException)),
             BookingNotFoundException => (HttpStatusCode.NotFound, nameof(BookingNotFoundException)),
             BookingConflictException => (HttpStatusCode.Conflict, nameof(BookingConflictException)),
             RoomDeletionException => (HttpStatusCode.BadRequest, nameof(RoomDeletionException)),
+
             _ => (HttpStatusCode.InternalServerError, "ServerError")
         };
 

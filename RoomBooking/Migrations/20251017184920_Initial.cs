@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace RoomBooking.Data.Migrations
+namespace RoomBooking.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -18,7 +18,10 @@ namespace RoomBooking.Data.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
-                    Capacity = table.Column<int>(type: "INTEGER", nullable: false)
+                    Capacity = table.Column<int>(type: "INTEGER", nullable: false),
+                    PricePerDay = table.Column<decimal>(type: "TEXT", nullable: false),
+                    Description = table.Column<string>(type: "TEXT", maxLength: 500, nullable: false),
+                    Address = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -34,7 +37,10 @@ namespace RoomBooking.Data.Migrations
                     RoomId = table.Column<int>(type: "INTEGER", nullable: false),
                     Start = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
                     End = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
-                    Booker = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false)
+                    Booker = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
+                    TotalPrice = table.Column<decimal>(type: "TEXT", nullable: false),
+                    BookingDate = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
+                    IsCancelled = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {

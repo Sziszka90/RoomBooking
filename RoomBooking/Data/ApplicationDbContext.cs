@@ -27,4 +27,12 @@ public class ApplicationDbContext : DbContext
             entity.HasOne(e => e.Room).WithMany(r => r.Bookings).HasForeignKey(e => e.RoomId).OnDelete(DeleteBehavior.Cascade);
         });
     }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            optionsBuilder.UseSqlite("Data Source=./data/roombooking.db");
+        }
+    }
 }

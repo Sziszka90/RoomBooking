@@ -34,7 +34,7 @@ public class RoomsService : IRoomsService
 
     public async Task<RoomDto> CreateAsync(CreateRoomDto createRoomDto)
     {
-        var room = new Room { Name = createRoomDto.Name, Capacity = createRoomDto.Capacity };
+        var room = _mapper.Map<Room>(createRoomDto);
         var result = await _unitOfWork.Rooms.AddAsync(room);
         await _unitOfWork.SaveChangesAsync();
         return _mapper.Map<RoomDto>(result);

@@ -49,16 +49,11 @@ public class BookingsService : IBookingsService
             throw new OverlapException(createBookingDto.RoomId, createBookingDto.Start, createBookingDto.End);
         }
 
-        var booking = new Booking
-        {
-            RoomId = createBookingDto.RoomId,
-            Start = createBookingDto.Start,
-            End = createBookingDto.End,
-            Booker = createBookingDto.Booker,
-            TotalPrice = room.PricePerDay * (int)(createBookingDto.End.Date - createBookingDto.Start.Date).TotalDays,
-            BookingDate = DateTimeOffset.Now,
-            IsCancelled = false
-        };
+        var booking = _mapper.Map<Booking>(createBookingDto);
+
+        booking.TotalPrice = room.PricePerDay * (int)(createBookingDto.End.Date - createBookingDto.Start.Date).TotalDays;
+        booking.BookingDate = DateTimeOffset.Now;
+        booking.IsCancelled = false;
 
         var result = await _unitOfWork.Bookings.AddAsync(booking);
         _ = await _unitOfWork.SaveChangesAsync();
@@ -86,7 +81,6 @@ public class BookingsService : IBookingsService
         var result = await _unitOfWork.Bookings.GetByIdAsync(id);
         if (result == null) throw new BookingNotFoundException(id);
         result!.IsCancelled = true;
-        await _unitOfWork.Bookings.UpdateAsync(result!);
         await _unitOfWork.SaveChangesAsync();
     }
 
@@ -139,7 +133,7 @@ public class BookingsService : IBookingsService
 
         var createdBooking = await _unitOfWork.Bookings.AddAsync(newBooking);
 
-        await _unitOfWork.Bookings.CancelAsync(existingBooking);
+        existingBooking.IsCancelled = true;
 
         await _unitOfWork.SaveChangesAsync();
 
