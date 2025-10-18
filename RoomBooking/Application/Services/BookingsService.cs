@@ -34,6 +34,14 @@ public class BookingsService : IBookingsService
             throw new ValidationException("End date must be after start date");
         }
 
+        var daysDifference = (createBookingDto.End.Date - createBookingDto.Start.Date).TotalDays;
+        if (daysDifference < 1)
+        {
+            _logger.LogWarning("Invalid booking duration: End date {End} must be at least one day after start date {Start}. Days difference: {DaysDifference}",
+                createBookingDto.End, createBookingDto.Start, daysDifference);
+            throw new ValidationException("End date must be at least one day after start date");
+        }
+
         var room = await _unitOfWork.Rooms.GetByIdAsync(createBookingDto.RoomId);
         if (room == null)
         {

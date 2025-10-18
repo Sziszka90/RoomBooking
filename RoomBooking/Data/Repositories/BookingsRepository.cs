@@ -89,9 +89,9 @@ public class BookingsRepository : IBookingsRepository
         }
 
         var bookings = await query
-            .OrderByDescending(b => b.BookingDate)
-            .ThenByDescending(b => b.Start)
             .ToListAsync();
+
+        bookings = bookings.OrderByDescending(b => b.BookingDate).ThenByDescending(b => b.Start).ToList();
 
         _logger.LogInformation("Found {BookingCount} bookings in history for user {Booker}", bookings.Count, booker);
         return bookings;

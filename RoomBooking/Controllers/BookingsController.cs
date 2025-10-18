@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using RoomBooking.Application.Dtos.BookingDtos;
 using RoomBooking.Application.Services;
-using RoomBooking.Domain.Exceptions;
 
 namespace RoomBooking.Controllers;
 
@@ -57,5 +56,24 @@ public class BookingsController : ControllerBase
             NewBooking = newBooking,
             Message = "Booking swapped to new room successfully"
         });
+    }
+
+    [HttpGet("user-history/{booker}")]
+    public async Task<IActionResult> GetUserHistory(
+        string booker,
+        [FromQuery] DateTimeOffset? fromDate = null,
+        [FromQuery] DateTimeOffset? toDate = null,
+        [FromQuery] decimal? minPrice = null,
+        [FromQuery] decimal? maxPrice = null)
+    {
+        var bookings = await _bookingsService.GetUserHistoryAsync(booker, fromDate, toDate, minPrice, maxPrice);
+        return Ok(bookings);
+    }
+
+    [HttpPost("print-user-history/{booker}")]
+    public async Task<IActionResult> PrintUserHistory(string booker)
+    {
+        await _bookingsService.PrintUserHistoryAsync(booker);
+        return Ok(new { Message = $"User history for '{booker}' has been logged to the console" });
     }
 }

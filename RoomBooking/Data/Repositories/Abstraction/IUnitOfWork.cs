@@ -1,4 +1,3 @@
-using RoomBooking.Data.Repositories.Abstraction;
 
 namespace RoomBooking.Data.Repositories.Abstraction;
 
