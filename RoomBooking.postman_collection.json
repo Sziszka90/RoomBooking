@@ -1,0 +1,316 @@
+{
+	"info": {
+		"_postman_id": "b3d7fac9-ee86-41b5-96bd-1170f3ad3e6a",
+		"name": "RoomBooking",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "11654352"
+	},
+	"item": [
+		{
+			"name": "Rooms",
+			"item": [
+				{
+					"name": "Create Room",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "  {\n    \"name\": \"VIP Corporate Suite\",\n    \"capacity\": 4,\n    \"pricePerDay\": 395.00,\n    \"description\": \"Premium corporate suite with meeting room, executive lounge access, and personalized concierge services for business elite.\",\n    \"address\": \"Budapest\"\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5133/api/rooms",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5133",
+							"path": [
+								"api",
+								"rooms"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5133/api/rooms",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5133",
+							"path": [
+								"api",
+								"rooms"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5133/api/rooms/11",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5133",
+							"path": [
+								"api",
+								"rooms",
+								"11"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Available Rooms",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5133/api/rooms/available?start=2025-10-20T14:00:00Z&end=2025-10-22T11:00:00Z",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5133",
+							"path": [
+								"api",
+								"rooms",
+								"available"
+							],
+							"query": [
+								{
+									"key": "start",
+									"value": "2025-10-20T14:00:00Z"
+								},
+								{
+									"key": "end",
+									"value": "2025-10-22T11:00:00Z"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5133/api/rooms/10",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5133",
+							"path": [
+								"api",
+								"rooms",
+								"10"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Bookings",
+			"item": [
+				{
+					"name": "Create Booking",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"roomId\": 1,\n  \"start\": \"2025-10-20T14:00:00Z\",\n  \"end\": \"2025-10-20T15:00:00Z\",\n  \"booker\": \"John Smith\",\n  \"totalPrice\": 300.00\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5133/api/bookings",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5133",
+							"path": [
+								"api",
+								"bookings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5133/api/bookings/13",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5133",
+							"path": [
+								"api",
+								"bookings",
+								"13"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Booking For Room",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5133/api/bookings/for-room/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5133",
+							"path": [
+								"api",
+								"bookings",
+								"for-room",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5133/api/bookings/cancel/16",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5133",
+							"path": [
+								"api",
+								"bookings",
+								"cancel",
+								"16"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Swap",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"existingBookingId\": 13,\n    \"newRoomId\": 2\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5133/api/bookings/swap",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5133",
+							"path": [
+								"api",
+								"bookings",
+								"swap"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User History",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5133/api/bookings/user-history/John Smith?maxPrice=300",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5133",
+							"path": [
+								"api",
+								"bookings",
+								"user-history",
+								"John Smith"
+							],
+							"query": [
+								{
+									"key": "maxPrice",
+									"value": "300"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Print History",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5133/api/bookings/print-user-history/John Smith",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5133",
+							"path": [
+								"api",
+								"bookings",
+								"print-user-history",
+								"John Smith"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

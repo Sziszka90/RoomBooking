@@ -6,7 +6,7 @@ using RoomBooking.Application.Mapping;
 using RoomBooking.Application.Services;
 using RoomBooking.Data.Repositories.Abstraction;
 using RoomBooking.Domain.Exceptions;
-using RoomBooking.Models;
+using RoomBooking.Domain;
 using Xunit;
 
 namespace RoomBooking.Testing.Services;
