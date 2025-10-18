@@ -3,7 +3,7 @@ using RoomBooking.Application.Dtos.RoomDtos;
 
 namespace RoomBooking.Application.Dtos.BookingDtos;
 
-public class BookingDto
+public record BookingDto
 {
     public int Id { get; set; }
 

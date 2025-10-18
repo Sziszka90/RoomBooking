@@ -54,7 +54,6 @@ using (var scope = app.Services.CreateScope())
             logger.LogInformation("Database migrations applied successfully.");
         }
 
-        // Configure SQLite to use DELETE journal mode (no WAL files)
         try
         {
             db.Database.ExecuteSqlRaw("PRAGMA journal_mode=DELETE;");

@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using RoomBooking.Models;
+using RoomBooking.Domain;
 
 namespace RoomBooking.Data;
 

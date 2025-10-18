@@ -1,4 +1,4 @@
-using RoomBooking.Models;
+using RoomBooking.Domain;
 
 namespace RoomBooking.Data.Repositories.Abstraction;
 
@@ -13,5 +13,5 @@ public interface IRoomsRepository
         DateTimeOffset end,
         decimal? minPrice = null,
         decimal? maxPrice = null);
-    Task RemoveAsync(Room room);
+    void Remove(Room room);
 }

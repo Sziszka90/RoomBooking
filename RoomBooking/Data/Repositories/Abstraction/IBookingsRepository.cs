@@ -1,4 +1,4 @@
-using RoomBooking.Models;
+using RoomBooking.Domain;
 
 namespace RoomBooking.Data.Repositories.Abstraction;
 

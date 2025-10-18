@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using RoomBooking.Data.Repositories.Abstraction;
-using RoomBooking.Models;
+using RoomBooking.Domain;
 
 namespace RoomBooking.Data.Repositories;
 
@@ -15,15 +15,15 @@ public class BookingsRepository : IBookingsRepository
         _logger = logger;
     }
 
-    public Task<Booking> AddAsync(Booking booking)
+    public async Task<Booking> AddAsync(Booking booking)
     {
         _logger.LogInformation("Creating new booking for room {RoomId} from {Start} to {End} by {Booker}",
             booking.RoomId, booking.Start, booking.End, booking.Booker);
 
-        _db.Bookings.Add(booking);
+        var result = await _db.Bookings.AddAsync(booking);
 
         _logger.LogInformation("Booking added to context for room {RoomId}", booking.RoomId);
-        return Task.FromResult(booking);
+        return result.Entity;
     }
 
     public async Task<Booking?> GetByIdAsync(int id)

@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace RoomBooking.Application.Dtos.BookingDtos;
 
-public class SwapBookingDto
+public record SwapBookingDto
 {
     [Required]
     public int ExistingBookingId { get; set; }

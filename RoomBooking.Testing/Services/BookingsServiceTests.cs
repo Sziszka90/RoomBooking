@@ -52,7 +52,6 @@ public class BookingsServiceTests
             Start = today.AddHours(9),
             End = today.AddDays(1).AddHours(17),
             Booker = "Test User",
-            TotalPrice = 100.00m
         };
 
         var room = new Room { Id = 1, Name = "Test Room", Capacity = 10, PricePerDay = 50.00m };
@@ -97,7 +96,6 @@ public class BookingsServiceTests
             Start = DateTimeOffset.Now.AddHours(3),
             End = DateTimeOffset.Now.AddHours(1),
             Booker = "Test User",
-            TotalPrice = 100.00m
         };
 
         // Act & Assert
@@ -117,10 +115,9 @@ public class BookingsServiceTests
         var createBookingDto = new CreateBookingDto
         {
             RoomId = 1,
-            Start = now.AddHours(9), // 9 AM
-            End = now.AddHours(17),  // 5 PM same day (8 hours, less than 1 day)
+            Start = now.AddHours(9),
+            End = now.AddHours(17),
             Booker = "Test User",
-            TotalPrice = 100.00m
         };
 
         // Act & Assert
@@ -139,8 +136,8 @@ public class BookingsServiceTests
         var createBookingDto = new CreateBookingDto
         {
             RoomId = 999,
-            Start = DateTimeOffset.Now.AddHours(1),
-            End = DateTimeOffset.Now.AddHours(3),
+            Start = DateTimeOffset.Now,
+            End = DateTimeOffset.Now.AddDays(3),
             Booker = "Test User"
         };
 
@@ -162,10 +159,9 @@ public class BookingsServiceTests
         var createBookingDto = new CreateBookingDto
         {
             RoomId = 1,
-            Start = DateTimeOffset.Now.AddHours(1),
-            End = DateTimeOffset.Now.AddHours(3),
-            Booker = "Test User",
-            TotalPrice = 100.00m
+            Start = DateTimeOffset.Now,
+            End = DateTimeOffset.Now.AddDays(3),
+            Booker = "Test User"
         };
 
         var room = new Room { Id = 1, Name = "Test Room", Capacity = 10, PricePerDay = 50.00m };

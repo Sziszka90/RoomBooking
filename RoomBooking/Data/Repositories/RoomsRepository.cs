@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using RoomBooking.Data.Repositories.Abstraction;
-using RoomBooking.Models;
+using RoomBooking.Domain;
 
 namespace RoomBooking.Data.Repositories;
 
@@ -43,9 +43,9 @@ public class RoomsRepository : IRoomsRepository
     public async Task<Room> AddAsync(Room room)
     {
         _logger.LogInformation("Creating new room: {RoomName} with capacity {Capacity}", room.Name, room.Capacity);
-        _db.Rooms.Add(room);
+        var result = await _db.Rooms.AddAsync(room);
         _logger.LogInformation("Successfully created room with ID {RoomId}: {RoomName}", room.Id, room.Name);
-        return room;
+        return result.Entity;
     }
 
     public async Task<bool> ExistsAsync(int id)
@@ -91,7 +91,7 @@ public class RoomsRepository : IRoomsRepository
         return availableRooms;
     }
 
-    public async Task RemoveAsync(Room room)
+    public void Remove(Room room)
     {
         _logger.LogInformation("Removing room {RoomId}: {RoomName}", room.Id, room.Name);
         _db.Rooms.Remove(room);

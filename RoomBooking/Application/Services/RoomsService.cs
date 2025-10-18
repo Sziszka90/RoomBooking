@@ -2,7 +2,7 @@ using AutoMapper;
 using RoomBooking.Application.Dtos.RoomDtos;
 using RoomBooking.Data.Repositories.Abstraction;
 using RoomBooking.Domain.Exceptions;
-using RoomBooking.Models;
+using RoomBooking.Domain;
 
 namespace RoomBooking.Application.Services;
 
@@ -69,7 +69,7 @@ public class RoomsService : IRoomsService
             throw new RoomDeletionException("Cannot delete room with existing bookings");
         }
 
-        await _unitOfWork.Rooms.RemoveAsync(room);
+        _unitOfWork.Rooms.Remove(room);
         await _unitOfWork.SaveChangesAsync();
         _logger.LogInformation("Successfully deleted room {RoomId}: {RoomName}", id, room.Name);
         return;

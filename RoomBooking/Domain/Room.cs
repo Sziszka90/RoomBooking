@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
 
-namespace RoomBooking.Models;
+namespace RoomBooking.Domain;
 
 public class Room
 {

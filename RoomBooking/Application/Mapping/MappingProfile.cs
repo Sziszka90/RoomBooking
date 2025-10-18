@@ -1,7 +1,7 @@
 using AutoMapper;
 using RoomBooking.Application.Dtos.BookingDtos;
 using RoomBooking.Application.Dtos.RoomDtos;
-using RoomBooking.Models;
+using RoomBooking.Domain;
 
 namespace RoomBooking.Application.Mapping;
 

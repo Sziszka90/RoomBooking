@@ -2,7 +2,7 @@ using AutoMapper;
 using RoomBooking.Application.Dtos.BookingDtos;
 using RoomBooking.Data.Repositories.Abstraction;
 using RoomBooking.Domain.Exceptions;
-using RoomBooking.Models;
+using RoomBooking.Domain;
 
 namespace RoomBooking.Application.Services;
 
