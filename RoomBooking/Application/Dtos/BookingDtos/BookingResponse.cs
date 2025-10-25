@@ -1,9 +1,10 @@
 
+
 using RoomBooking.Application.Dtos.RoomDtos;
 
 namespace RoomBooking.Application.Dtos.BookingDtos;
 
-public record BookingDto
+public record BookingResponse
 {
     public int Id { get; set; }
 
@@ -21,7 +22,7 @@ public record BookingDto
 
     public int NumberOfDays { get; set; }
 
-    public RoomDto? Room { get; set; }
+    public RoomResponse? Room { get; set; }
 
     public bool IsCancelled { get; set; }
 }

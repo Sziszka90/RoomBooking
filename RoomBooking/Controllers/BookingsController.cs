@@ -15,7 +15,7 @@ public class BookingsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateBookingDto createBookingDto)
+    public async Task<IActionResult> Create([FromBody] CreateBookingRequest createBookingDto)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -46,7 +46,7 @@ public class BookingsController : ControllerBase
     }
 
     [HttpPost("swap")]
-    public async Task<IActionResult> Swap([FromBody] SwapBookingDto swapBookingDto)
+    public async Task<IActionResult> Swap([FromBody] SwapBookingRequest swapBookingDto)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 

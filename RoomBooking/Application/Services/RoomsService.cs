@@ -1,8 +1,8 @@
 using AutoMapper;
-using RoomBooking.Application.Dtos.RoomDtos;
 using RoomBooking.Data.Repositories.Abstraction;
 using RoomBooking.Domain.Exceptions;
 using RoomBooking.Domain;
+using RoomBooking.Application.Dtos.RoomDtos;
 
 namespace RoomBooking.Application.Services;
 
@@ -19,35 +19,35 @@ public class RoomsService : IRoomsService
         _logger = logger;
     }
 
-    public async Task<List<RoomDto>> GetAllAsync()
+    public async Task<List<RoomResponse>> GetAllAsync()
     {
         var result = await _unitOfWork.Rooms.GetAllAsync();
-        return _mapper.Map<List<RoomDto>>(result);
+        return _mapper.Map<List<RoomResponse>>(result);
     }
 
-    public async Task<RoomDto> GetByIdAsync(int id)
+    public async Task<RoomResponse> GetByIdAsync(int id)
     {
         var result = await _unitOfWork.Rooms.GetByIdAsync(id);
         if (result == null) throw new RoomNotFoundException(id);
-        return _mapper.Map<RoomDto>(result);
+        return _mapper.Map<RoomResponse>(result);
     }
 
-    public async Task<RoomDto> CreateAsync(CreateRoomDto createRoomDto)
+    public async Task<RoomResponse> CreateAsync(CreateRoomRequest createRoomDto)
     {
         var room = _mapper.Map<Room>(createRoomDto);
         var result = await _unitOfWork.Rooms.AddAsync(room);
         await _unitOfWork.SaveChangesAsync();
-        return _mapper.Map<RoomDto>(result);
+        return _mapper.Map<RoomResponse>(result);
     }
 
-    public async Task<List<RoomDto>> GetAvailableRooms(
+    public async Task<List<RoomResponse>> GetAvailableRooms(
         DateTimeOffset start,
         DateTimeOffset end,
         decimal? minPrice,
         decimal? maxPrice)
     {
         var result = await _unitOfWork.Rooms.GetAvailableRoomsAsync(start, end, minPrice, maxPrice);
-        return _mapper.Map<List<RoomDto>>(result);
+        return _mapper.Map<List<RoomResponse>>(result);
     }
 
     public async Task DeleteAsync(int id)

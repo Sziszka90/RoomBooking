@@ -1,6 +1,6 @@
 namespace RoomBooking.Application.Dtos.RoomDtos;
 
-public record RoomDto
+public record RoomResponse
 {
     public int Id { get; set; }
 

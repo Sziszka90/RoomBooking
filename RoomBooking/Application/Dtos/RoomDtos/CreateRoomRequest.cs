@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace RoomBooking.Application.Dtos.RoomDtos;
 
-public record CreateRoomDto
+public record CreateRoomRequest
 {
     [Required]
     [MaxLength(200)]

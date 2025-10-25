@@ -27,7 +27,7 @@ public class RoomsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateRoomDto createRoomDto)
+    public async Task<IActionResult> Create([FromBody] CreateRoomRequest createRoomDto)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 

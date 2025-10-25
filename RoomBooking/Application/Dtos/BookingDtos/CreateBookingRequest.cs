@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace RoomBooking.Application.Dtos.BookingDtos;
 
-public record CreateBookingDto
+public record CreateBookingRequest
 {
     [Required]
     public int RoomId { get; set; }

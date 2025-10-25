@@ -46,7 +46,7 @@ public class BookingsServiceTests
     {
         // Arrange
         var today = DateTimeOffset.Now.Date;
-        var createBookingDto = new CreateBookingDto
+        var createBookingDto = new CreateBookingRequest
         {
             RoomId = 1,
             Start = today.AddHours(9),
@@ -90,7 +90,7 @@ public class BookingsServiceTests
     public async Task CreateAsync_WithInvalidTimeRange_ShouldThrowValidationException()
     {
         // Arrange
-        var createBookingDto = new CreateBookingDto
+        var createBookingDto = new CreateBookingRequest
         {
             RoomId = 1,
             Start = DateTimeOffset.Now.AddHours(3),
@@ -112,7 +112,7 @@ public class BookingsServiceTests
     {
         // Arrange
         var now = DateTimeOffset.Now.Date;
-        var createBookingDto = new CreateBookingDto
+        var createBookingDto = new CreateBookingRequest
         {
             RoomId = 1,
             Start = now.AddHours(9),
@@ -133,7 +133,7 @@ public class BookingsServiceTests
     public async Task CreateAsync_WithNonExistentRoom_ShouldThrowInvalidOperationException()
     {
         // Arrange
-        var createBookingDto = new CreateBookingDto
+        var createBookingDto = new CreateBookingRequest
         {
             RoomId = 999,
             Start = DateTimeOffset.Now,
@@ -156,7 +156,7 @@ public class BookingsServiceTests
     public async Task CreateAsync_WithOverlappingBooking_ShouldThrowOverlapException()
     {
         // Arrange
-        var createBookingDto = new CreateBookingDto
+        var createBookingDto = new CreateBookingRequest
         {
             RoomId = 1,
             Start = DateTimeOffset.Now,
@@ -286,7 +286,7 @@ public class BookingsServiceTests
     public async Task SwapAsync_WithValidData_ShouldSwapBookingToNewRoom()
     {
         // Arrange
-        var swapDto = new SwapBookingDto
+        var swapDto = new SwapBookingRequest
         {
             ExistingBookingId = 1,
             NewRoomId = 2
@@ -345,7 +345,7 @@ public class BookingsServiceTests
     public async Task SwapAsync_WithNonExistentBooking_ShouldThrowBookingNotFoundException()
     {
         // Arrange
-        var swapDto = new SwapBookingDto
+        var swapDto = new SwapBookingRequest
         {
             ExistingBookingId = 999,
             NewRoomId = 2
@@ -365,7 +365,7 @@ public class BookingsServiceTests
     public async Task SwapAsync_WithNonExistentNewRoom_ShouldThrowRoomNotFoundException()
     {
         // Arrange
-        var swapDto = new SwapBookingDto
+        var swapDto = new SwapBookingRequest
         {
             ExistingBookingId = 1,
             NewRoomId = 999
@@ -395,7 +395,7 @@ public class BookingsServiceTests
     public async Task SwapAsync_WithNewRoomNotAvailable_ShouldThrowOverlapException()
     {
         // Arrange
-        var swapDto = new SwapBookingDto
+        var swapDto = new SwapBookingRequest
         {
             ExistingBookingId = 1,
             NewRoomId = 2

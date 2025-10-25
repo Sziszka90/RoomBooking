@@ -5,10 +5,10 @@ namespace RoomBooking.Application.Services;
 
 public interface IRoomsService
 {
-    Task<List<RoomDto>> GetAllAsync();
-    Task<RoomDto> GetByIdAsync(int id);
-    Task<RoomDto> CreateAsync(CreateRoomDto createRoomDto);
-    Task<List<RoomDto>> GetAvailableRooms(
+    Task<List<RoomResponse>> GetAllAsync();
+    Task<RoomResponse> GetByIdAsync(int id);
+    Task<RoomResponse> CreateAsync(CreateRoomRequest createRoomDto);
+    Task<List<RoomResponse>> GetAvailableRooms(
         DateTimeOffset start,
         DateTimeOffset end,
         decimal? minPrice,

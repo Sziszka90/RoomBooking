@@ -22,7 +22,7 @@ public class BookingsService : IBookingsService
         _logger = logger;
     }
 
-    public async Task<BookingDto> CreateAsync(CreateBookingDto createBookingDto)
+    public async Task<BookingResponse> CreateAsync(CreateBookingRequest createBookingDto)
     {
         _logger.LogInformation("Creating booking for room {RoomId} from {Start} to {End} by {Booker}",
             createBookingDto.RoomId, createBookingDto.Start, createBookingDto.End, createBookingDto.Booker);
@@ -67,21 +67,21 @@ public class BookingsService : IBookingsService
         _ = await _unitOfWork.SaveChangesAsync();
         _logger.LogInformation("Successfully created booking {BookingId} for room {RoomId}", result.Id, result.RoomId);
 
-        return _mapper.Map<BookingDto>(result);
+        return _mapper.Map<BookingResponse>(result);
     }
 
-    public async Task<BookingDto> GetByIdAsync(int id)
+    public async Task<BookingResponse> GetByIdAsync(int id)
     {
         var result = await _unitOfWork.Bookings.GetByIdAsync(id);
         if (result == null) throw new BookingNotFoundException(id);
-        return _mapper.Map<BookingDto>(result);
+        return _mapper.Map<BookingResponse>(result);
     }
 
-    public async Task<List<BookingDto>> GetBookingForRoomAsync(int roomId)
+    public async Task<List<BookingResponse>> GetBookingForRoomAsync(int roomId)
     {
         var result = await _unitOfWork.Bookings.GetBookingForRoomAsync(roomId);
         if (result == null) throw new RoomNotFoundException(roomId);
-        return _mapper.Map<List<BookingDto>>(result);
+        return _mapper.Map<List<BookingResponse>>(result);
     }
 
     public async Task CancelAsync(int id)
@@ -98,7 +98,7 @@ public class BookingsService : IBookingsService
         return result;
     }
 
-    public async Task<BookingDto> SwapAsync(SwapBookingDto swapBookingDto)
+    public async Task<BookingResponse> SwapAsync(SwapBookingRequest swapBookingDto)
     {
         _logger.LogInformation("Swapping booking {ExistingBookingId} to room {NewRoomId}",
             swapBookingDto.ExistingBookingId, swapBookingDto.NewRoomId);
@@ -148,10 +148,10 @@ public class BookingsService : IBookingsService
         _logger.LogInformation("Successfully swapped booking {ExistingBookingId} from room {OldRoomId} to room {NewRoomId}. New booking ID: {NewBookingId}",
             swapBookingDto.ExistingBookingId, existingBooking.RoomId, swapBookingDto.NewRoomId, createdBooking.Id);
 
-        return _mapper.Map<BookingDto>(createdBooking);
+        return _mapper.Map<BookingResponse>(createdBooking);
     }
 
-    public async Task<List<BookingDto>> GetUserHistoryAsync(
+    public async Task<List<BookingResponse>> GetUserHistoryAsync(
         string booker,
         DateTimeOffset? fromDate = null,
         DateTimeOffset? toDate = null,
@@ -171,7 +171,7 @@ public class BookingsService : IBookingsService
             booker, fromDate, toDate, minPrice, maxPrice);
 
         _logger.LogInformation("Successfully retrieved {BookingCount} bookings for user {Booker}", bookings.Count, booker);
-        return _mapper.Map<List<BookingDto>>(bookings);
+        return _mapper.Map<List<BookingResponse>>(bookings);
     }
 
     public async Task PrintUserHistoryAsync(string booker)

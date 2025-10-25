@@ -6,7 +6,7 @@ using RoomBooking.Application.Mapping;
 using RoomBooking.Application.Services;
 using RoomBooking.Data.Repositories.Abstraction;
 using RoomBooking.Domain.Exceptions;
-using RoomBooking.Models;
+using RoomBooking.Domain;
 using Xunit;
 
 namespace RoomBooking.Testing.Services;
@@ -98,7 +98,7 @@ public class RoomsServiceTests
     public async Task CreateAsync_ShouldCreateAndReturnRoom()
     {
         // Arrange
-        var createRoomDto = new CreateRoomDto
+        var createRoomDto = new CreateRoomRequest
         {
             Name = "New Room",
             Capacity = 20,
@@ -168,7 +168,6 @@ public class RoomsServiceTests
 
         _mockRoomsRepository.Setup(r => r.GetByIdAsync(roomId)).ReturnsAsync(room);
         _mockBookingsRepository.Setup(b => b.GetBookingForRoomAsync(roomId)).ReturnsAsync(new List<Booking>());
-        _mockRoomsRepository.Setup(r => r.RemoveAsync(room)).Returns(Task.CompletedTask);
 
         // Act
         await _roomsService.DeleteAsync(roomId);
@@ -176,7 +175,7 @@ public class RoomsServiceTests
         // Assert
         _mockRoomsRepository.Verify(r => r.GetByIdAsync(roomId), Times.Once);
         _mockBookingsRepository.Verify(b => b.GetBookingForRoomAsync(roomId), Times.Once);
-        _mockRoomsRepository.Verify(r => r.RemoveAsync(room), Times.Once);
+        _mockRoomsRepository.Verify(r => r.Remove(room), Times.Once);
         _mockUnitOfWork.Verify(u => u.SaveChangesAsync(), Times.Once);
     }
 
@@ -194,7 +193,7 @@ public class RoomsServiceTests
         Assert.Equal("Room 999 not found", exception.Message);
         _mockRoomsRepository.Verify(r => r.GetByIdAsync(roomId), Times.Once);
         _mockBookingsRepository.Verify(b => b.GetBookingForRoomAsync(It.IsAny<int>()), Times.Never);
-        _mockRoomsRepository.Verify(r => r.RemoveAsync(It.IsAny<Room>()), Times.Never);
+        _mockRoomsRepository.Verify(r => r.Remove(It.IsAny<Room>()), Times.Never);
     }
 
     [Fact]
@@ -218,10 +217,9 @@ public class RoomsServiceTests
         Assert.Equal("Cannot delete room with existing bookings", exception.Message);
         _mockRoomsRepository.Verify(r => r.GetByIdAsync(roomId), Times.Once);
         _mockBookingsRepository.Verify(b => b.GetBookingForRoomAsync(roomId), Times.Once);
-        _mockRoomsRepository.Verify(r => r.RemoveAsync(It.IsAny<Room>()), Times.Never);
+        _mockRoomsRepository.Verify(r => r.Remove(It.IsAny<Room>()), Times.Never);
     }
 
-    // Additional comprehensive tests for GetAvailableRooms method
     [Fact]
     public async Task GetAvailableRooms_WithNullPriceFilters_ShouldReturnAvailableRooms()
     {

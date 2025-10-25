@@ -9,14 +9,14 @@ public class MappingProfile : Profile
 {
     public MappingProfile()
     {
-        CreateMap<Room, RoomDto>();
-        CreateMap<CreateRoomDto, Room>()
+        CreateMap<Room, RoomResponse>();
+        CreateMap<CreateRoomRequest, Room>()
             .ForMember(dest => dest.Id, opt => opt.Ignore())
             .ForMember(dest => dest.Bookings, opt => opt.Ignore());
 
-        CreateMap<Booking, BookingDto>()
+        CreateMap<Booking, BookingResponse>()
             .ForMember(dest => dest.NumberOfDays, opt => opt.MapFrom(src => src.NumberOfDays));
-        CreateMap<CreateBookingDto, Booking>()
+        CreateMap<CreateBookingRequest, Booking>()
             .ForMember(dest => dest.Id, opt => opt.Ignore())
             .ForMember(dest => dest.Room, opt => opt.Ignore())
             .ForMember(dest => dest.BookingDate, opt => opt.Ignore())

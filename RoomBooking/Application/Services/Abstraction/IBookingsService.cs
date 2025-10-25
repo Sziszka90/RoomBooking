@@ -6,10 +6,10 @@ namespace RoomBooking.Application.Services;
 
 public interface IBookingsService
 {
-    Task<BookingDto> CreateAsync(CreateBookingDto input);
-    Task<BookingDto> GetByIdAsync(int id);
-    Task<List<BookingDto>> GetBookingForRoomAsync(int roomId);
-    Task<List<BookingDto>> GetUserHistoryAsync(
+    Task<BookingResponse> CreateAsync(CreateBookingRequest input);
+    Task<BookingResponse> GetByIdAsync(int id);
+    Task<List<BookingResponse>> GetBookingForRoomAsync(int roomId);
+    Task<List<BookingResponse>> GetUserHistoryAsync(
         string booker,
         DateTimeOffset? fromDate = null,
         DateTimeOffset? toDate = null,
@@ -18,5 +18,5 @@ public interface IBookingsService
     Task PrintUserHistoryAsync(string booker);
     Task CancelAsync(int id);
     Task<bool> AnyOverlapAsync(int roomId, DateTimeOffset start, DateTimeOffset end);
-    Task<BookingDto> SwapAsync(SwapBookingDto swapBookingDto);
+    Task<BookingResponse> SwapAsync(SwapBookingRequest swapBookingDto);
 }
